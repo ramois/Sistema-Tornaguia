@@ -35,33 +35,66 @@
             font-size: 10px;
             margin-bottom: 1mm;
         }
+        .divider + .copy .copy-label {
+            margin-top: 4mm;
+        }
         .divider {
             border-top: 1px dashed #000;
-            margin: 2mm 0;
+            margin: 0;
         }
         .copy {
-            min-height: 165mm;
+            min-height: 16.51cm;
         }
         .sheet {
             border: 1px solid #000;
             padding: 2.5mm;
+            position: relative;
+            overflow: hidden;
+        }
+        .watermark {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .watermark img {
+            width: 70%;
+            opacity: 0.12;
+            transform: none;
+        }
+        .sheet > *:not(.watermark) {
+            position: relative;
+            z-index: 1;
         }
         .header-block {
             display: grid;
-            grid-template-columns: 44px 1fr 44px;
-            gap: 3mm;
+            grid-template-columns: 46px minmax(0, 1fr) 46px;
+            gap: 0;
             align-items: center;
             margin-bottom: 2mm;
         }
+        .header-block > div {
+            min-width: 0;
+        }
+        .header-block .crest:first-child {
+            margin-right: -50mm;
+            transform: translateX(15mm);
+        }
+        .header-block .crest:last-child {
+            margin-left: -25mm;
+        }
         .crest {
-            width: 44px;
-            height: 44px;
+            width: 100px;
+            height: 100px;
             object-fit: contain;
         }
         .header {
             text-align: center;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 16px;
             line-height: 1.1;
             margin: 0;
         }
@@ -95,7 +128,7 @@
         }
         .field {
             border: 1px solid #000;
-            padding: 1mm;
+            padding: 0.5mm;
             min-height: 3.5mm;
         }
         .label {
@@ -156,8 +189,11 @@
     <div class="copy">
         <div class="copy-label">ORIGINAL</div>
         <div class="sheet">
+            <div class="watermark">
+                <img src="{{ asset('img/pacocollo.png') }}" alt="Marca de agua">
+            </div>
             <div class="header-block">
-                <img class="crest" src="{{ asset('img/tornaguia.jpeg') }}" alt="Escudo izquierdo">
+                <img class="crest" src="{{ asset('img/fedecomin-oruro.png') }}" alt="Escudo izquierdo">
                 <div>
                     <div class="header">COOPERATIVA MINERA "PACOCOLLO" R.L.</div>
                     <div class="subheader">AFILIADO A LA FEDERACION DPTAL. DE COOP. MINERAS DE ORURO</div>
@@ -166,15 +202,15 @@
                     <div class="subheader">SALINAS - ORURO - BOLIVIA</div>
                     <div class="tornaguia-title">TORNAGUIA N {{ $tornaguia->id }}</div>
                 </div>
-                <img class="crest" src="{{ asset('img/tornaguia.jpeg') }}" alt="Escudo derecho">
+                <img class="crest" src="{{ asset('img/pacocollo.png') }}" alt="Escudo derecho">
             </div>
 
             <div class="grid">
                 <div class="block">
                     <div class="stack">
                         <div class="field"><span class="label">Fecha:</span> {{ $fechaFmt }}</div>
-                        <div class="field"><span class="label">Departamento:</span> {{ $tornaguia->departamento }}</div>
-                        <div class="field"><span class="label">Centro Minero:</span> {{ $tornaguia->centro_minero }}</div>
+                        <div class="field"><span class="label">Departamento:</span> {{ $tornaguia->departamento ?? 'ORURO' }}</div>
+                        <div class="field"><span class="label">Centro Minero:</span> {{ $tornaguia->centro_minero ?? 'ORURO' }}</div>
                         <div class="field"><span class="label">Yacimiento:</span> {{ $tornaguia->yacimiento }}</div>
                         <div class="field"><span class="label">Tranca de Salida:</span> {{ $tornaguia->tranca_de_salida }}</div>
                     </div>
@@ -213,6 +249,7 @@
                     <div class="stack">
                         <div class="field"><span class="label">Tipo de Mineral:</span> {{ $tornaguia->tipo_de_mineral }}</div>
                         <div class="field"><span class="label">Minerales:</span> {{ $tornaguia->minerales }}</div>
+                        <div class="field"><span class="label">Presentación:</span> Broza</div>
                         <div class="field"><span class="label">Peso (Kg):</span> {{ $tornaguia->peso_kg }}</div>
                         <div class="field"><span class="label">Cantidad:</span> {{ $tornaguia->cantidad }}</div>
                         <div class="field"><span class="label">Nro Lote:</span> {{ $tornaguia->nro_lote }}</div>
@@ -221,6 +258,7 @@
             </div>
             <div class="signatures">
                 <div class="sign-date">Fecha: {{ $fechaFmt }}</div> 
+                <br>
                 <br>
                 <div class="sign-row">
                     <div class="sign-col">
@@ -237,13 +275,19 @@
         </div>
     </div>
 
-    <div class="divider"></div>
-
+ 
+    <br>
+    <br>
+    <br>
+    <br>
     <div class="copy">
         <div class="copy-label">COPIA</div>
         <div class="sheet">
+            <div class="watermark">
+                <img src="{{ asset('img/pacocollo.png') }}" alt="Marca de agua">
+            </div>
             <div class="header-block">
-                <img class="crest" src="{{ asset('img/tornaguia.jpeg') }}" alt="Escudo izquierdo">
+                <img class="crest" src="{{ asset('img/fedecomin-oruro.png') }}" alt="Escudo izquierdo">
                 <div>
                     <div class="header">COOPERATIVA MINERA "PACOCOLLO" R.L.</div>
                     <div class="subheader">AFILIADO A LA FEDERACION DPTAL. DE COOP. MINERAS DE ORURO</div>
@@ -252,15 +296,15 @@
                     <div class="subheader">SALINAS - ORURO - BOLIVIA</div>
                     <div class="tornaguia-title">TORNAGUIA N {{ $tornaguia->id }}</div>
                 </div>
-                <img class="crest" src="{{ asset('img/tornaguia.jpeg') }}" alt="Escudo derecho">
+                <img class="crest" src="{{ asset('img/pacocollo.png') }}" alt="Escudo derecho">
             </div>
 
             <div class="grid">
                 <div class="block">
                     <div class="stack">
                         <div class="field"><span class="label">Fecha:</span> {{ $fechaFmt }}</div>
-                        <div class="field"><span class="label">Departamento:</span> {{ $tornaguia->departamento }}</div>
-                        <div class="field"><span class="label">Centro Minero:</span> {{ $tornaguia->centro_minero }}</div>
+                        <div class="field"><span class="label">Departamento:</span> {{ $tornaguia->departamento ?? 'ORURO' }}</div>
+                        <div class="field"><span class="label">Centro Minero:</span> {{ $tornaguia->centro_minero ?? 'ORURO' }}</div>
                         <div class="field"><span class="label">Yacimiento:</span> {{ $tornaguia->yacimiento }}</div>
                         <div class="field"><span class="label">Tranca de Salida:</span> {{ $tornaguia->tranca_de_salida }}</div>
                     </div>
@@ -299,6 +343,7 @@
                     <div class="stack">
                         <div class="field"><span class="label">Tipo de Mineral:</span> {{ $tornaguia->tipo_de_mineral }}</div>
                         <div class="field"><span class="label">Minerales:</span> {{ $tornaguia->minerales }}</div>
+                        <div class="field"><span class="label">Presentación:</span> Broza</div>
                         <div class="field"><span class="label">Peso (Kg):</span> {{ $tornaguia->peso_kg }}</div>
                         <div class="field"><span class="label">Cantidad:</span> {{ $tornaguia->cantidad }}</div>
                         <div class="field"><span class="label">Nro Lote:</span> {{ $tornaguia->nro_lote }}</div>
@@ -308,6 +353,7 @@
 
             <div class="signatures">
                 <div class="sign-date">Fecha: {{ $fechaFmt }}</div>
+                <br>
                 <br>
                 <div class="sign-row">
                     <div class="sign-col">

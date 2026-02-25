@@ -22,14 +22,6 @@
                                     <input type="date" name="fecha" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-200" value="{{ old('fecha') }}">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-1">Departamento</label>
-                                    <input type="text" name="departamento" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-200" value="{{ old('departamento') }}">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Centro Minero</label>
-                                    <input type="text" name="centro_minero" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-200" value="{{ old('centro_minero') }}">
-                                </div>
-                                <div>
                                     <label class="block text-sm font-medium mb-1">Yacimiento</label>
                                     <input type="text" name="yacimiento" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-200" value="{{ old('yacimiento') }}">
                                 </div>
@@ -112,15 +104,39 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                             <div>
                                 <label class="block text-sm font-medium mb-1">Tipo de Mineral</label>
-                                <input type="text" name="tipo_de_mineral" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-200" value="{{ old('tipo_de_mineral') }}">
+                                <div class="flex flex-wrap gap-4 pt-1">
+                                    @php
+                                        $tipos = ['Plata', 'Zinc', 'Plomo', 'Cobre', 'Bismuto', 'Estaño', 'Oro', 'Wolfran', 'Otros'];
+                                        $oldTipos = (array) old('tipo_de_mineral', []);
+                                    @endphp
+                                    @foreach($tipos as $tipo)
+                                        <label class="inline-flex items-center gap-2 text-sm">
+                                            <input type="checkbox" name="tipo_de_mineral[]" value="{{ $tipo }}" class="rounded border-slate-300"
+                                                @checked(in_array($tipo, $oldTipos, true))>
+                                            <span>{{ $tipo }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                                <div id="otros-minerales" class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3" style="display: none;">
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Otro nombre</label>
+                                        <input type="text" id="otro_nombre" name="otro_nombre" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-200" value="{{ old('otro_nombre') }}">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Otra sigla</label>
+                                        <input type="text" id="otro_sigla" name="otro_sigla" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-200" value="{{ old('otro_sigla') }}">
+                                    </div>
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">Minerales</label>
-                                <input type="text" name="minerales" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-200" value="{{ old('minerales') }}">
+                                <input type="text" id="minerales" name="minerales" class="w-full px-3 py-2 border border-slate-300 rounded-md bg-slate-100" value="{{ old('minerales') }}" readonly>
                             </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                             <div>
                                 <label class="block text-sm font-medium mb-1">Peso (Kg)</label>
                                 <input type="number" step="0.01" name="peso_kg" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-200" value="{{ old('peso_kg') }}">
@@ -162,10 +178,45 @@
             document.getElementById('ci_chofer').value = opt?.dataset?.ci || '';
         }
 
+        function aplicarMinerales() {
+            const map = { Plata: 'Ag', Zinc: 'Zn', Plomo: 'Pb', Cobre: 'Cu', Bismuto: 'Bi', Estaño: 'Sn', Oro: 'Au', Wolfran: 'W' };
+            const seleccionados = Array.from(document.querySelectorAll('input[name="tipo_de_mineral[]"]:checked'))
+                .map(input => input.value)
+                .filter(Boolean);
+            const abrevs = seleccionados.map(item => map[item]).filter(Boolean);
+            const otroNombre = document.getElementById('otro_nombre').value.trim();
+            const otroSigla = document.getElementById('otro_sigla').value.trim();
+            if (otroSigla) {
+                abrevs.push(otroSigla);
+            }
+            document.getElementById('minerales').value = abrevs.join(', ');
+        }
+
+        function toggleOtrosMinerales() {
+            const otrosChecked = document.querySelector('input[name="tipo_de_mineral[]"][value="Otros"]')?.checked;
+            const wrapper = document.getElementById('otros-minerales');
+            if (!wrapper) return;
+            wrapper.style.display = otrosChecked ? 'grid' : 'none';
+            if (!otrosChecked) {
+                document.getElementById('otro_nombre').value = '';
+                document.getElementById('otro_sigla').value = '';
+            }
+            aplicarMinerales();
+        }
+
         placaSelect.addEventListener('change', aplicarVehiculo);
         licSelect.addEventListener('change', aplicarChofer);
+        document.querySelectorAll('input[name="tipo_de_mineral[]"]').forEach(input => {
+            input.addEventListener('change', () => {
+                aplicarMinerales();
+                toggleOtrosMinerales();
+            });
+        });
+        document.getElementById('otro_sigla').addEventListener('input', aplicarMinerales);
 
         aplicarVehiculo();
         aplicarChofer();
+        toggleOtrosMinerales();
+        aplicarMinerales();
     </script>
 </x-app-layout>

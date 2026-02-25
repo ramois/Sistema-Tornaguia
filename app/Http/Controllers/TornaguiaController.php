@@ -26,8 +26,6 @@ class TornaguiaController extends Controller
     {
         $data = $request->validate([
             'fecha' => 'nullable|date',
-            'departamento' => 'nullable|string',
-            'centro_minero' => 'nullable|string',
             'yacimiento' => 'nullable|string',
             'tranca_de_salida' => 'nullable|string',
             'placa' => 'required|string|exists:vehicles,placa',
@@ -36,12 +34,17 @@ class TornaguiaController extends Controller
             'empresa_cooperativa' => 'nullable|string',
             'comprador' => 'nullable|string',
             'destino' => 'nullable|string',
-            'tipo_de_mineral' => 'nullable|string',
+            'tipo_de_mineral' => 'nullable',
             'minerales' => 'nullable|string',
+            'otro_nombre' => 'nullable|string',
+            'otro_sigla' => 'nullable|string',
             'peso_kg' => 'nullable|numeric',
             'cantidad' => 'nullable|integer',
             'nro_lote' => 'nullable|string',
         ]);
+        $data['departamento'] = 'ORURO';
+        $data['centro_minero'] = 'ORURO';
+        $data = $this->normalizeMinerales($request, $data);
 
         $vehicle = Vehicle::where('placa', $data['placa'])->first();
         $driver = Driver::where('licencia', $data['licencia_conductor'])->first();
@@ -54,8 +57,8 @@ class TornaguiaController extends Controller
 
         $t = Tornaguia::create([
             'fecha' => $data['fecha'] ?? null,
-            'departamento' => $data['departamento'] ?? null,
-            'centro_minero' => $data['centro_minero'] ?? null,
+            'departamento' => $data['departamento'],
+            'centro_minero' => $data['centro_minero'],
             'yacimiento' => $data['yacimiento'] ?? null,
             'tranca_de_salida' => $data['tranca_de_salida'] ?? null,
             'propietario_mineral' => $data['propietario_mineral'] ?? null,
@@ -101,8 +104,6 @@ class TornaguiaController extends Controller
     {
         $data = $request->validate([
             'fecha' => 'nullable|date',
-            'departamento' => 'nullable|string',
-            'centro_minero' => 'nullable|string',
             'yacimiento' => 'nullable|string',
             'tranca_de_salida' => 'nullable|string',
             'placa' => 'required|string|exists:vehicles,placa',
@@ -111,12 +112,17 @@ class TornaguiaController extends Controller
             'empresa_cooperativa' => 'nullable|string',
             'comprador' => 'nullable|string',
             'destino' => 'nullable|string',
-            'tipo_de_mineral' => 'nullable|string',
+            'tipo_de_mineral' => 'nullable',
             'minerales' => 'nullable|string',
+            'otro_nombre' => 'nullable|string',
+            'otro_sigla' => 'nullable|string',
             'peso_kg' => 'nullable|numeric',
             'cantidad' => 'nullable|integer',
             'nro_lote' => 'nullable|string',
         ]);
+        $data['departamento'] = 'ORURO';
+        $data['centro_minero'] = 'ORURO';
+        $data = $this->normalizeMinerales($request, $data);
 
         $vehicle = Vehicle::where('placa', $data['placa'])->first();
         $driver = Driver::where('licencia', $data['licencia_conductor'])->first();
@@ -129,8 +135,8 @@ class TornaguiaController extends Controller
 
         $tornaguia->update([
             'fecha' => $data['fecha'] ?? null,
-            'departamento' => $data['departamento'] ?? null,
-            'centro_minero' => $data['centro_minero'] ?? null,
+            'departamento' => $data['departamento'],
+            'centro_minero' => $data['centro_minero'],
             'yacimiento' => $data['yacimiento'] ?? null,
             'tranca_de_salida' => $data['tranca_de_salida'] ?? null,
             'propietario_mineral' => $data['propietario_mineral'] ?? null,
@@ -153,5 +159,52 @@ class TornaguiaController extends Controller
     {
         $tornaguia->delete();
         return redirect()->route('tornaguias.index');
+    }
+
+    private function normalizeMinerales(Request $request, array $data): array
+    {
+        $tipo = $request->input('tipo_de_mineral');
+        $tipoList = [];
+        if (is_array($tipo)) {
+            $tipoList = array_values(array_filter(array_map('trim', $tipo)));
+        } elseif (is_string($tipo) && $tipo !== '') {
+            $tipoList = array_values(array_filter(array_map('trim', explode(',', $tipo))));
+        }
+
+        if ($tipoList) {
+            $map = [
+                'plata' => 'Ag',
+                'zinc' => 'Zn',
+                'plomo' => 'Pb',
+                'cobre' => 'Cu',
+                'bismuto' => 'Bi',
+                'estaño' => 'Sn',
+                'oro' => 'Au',
+                'wolfran' => 'W',
+            ];
+            $tipoList = array_values(array_filter($tipoList, function ($item) {
+                return mb_strtolower($item) !== 'otros';
+            }));
+            $abbr = [];
+            foreach ($tipoList as $item) {
+                $key = mb_strtolower($item);
+                if (isset($map[$key])) {
+                    $abbr[] = $map[$key];
+                }
+            }
+            $otroNombre = trim((string) $request->input('otro_nombre', ''));
+            $otroSigla = trim((string) $request->input('otro_sigla', ''));
+            if ($otroNombre !== '') {
+                $tipoList[] = $otroNombre;
+            }
+            if ($otroSigla !== '') {
+                $abbr[] = $otroSigla;
+            }
+
+            $data['tipo_de_mineral'] = $tipoList ? implode(', ', $tipoList) : null;
+            $data['minerales'] = $abbr ? implode(', ', $abbr) : null;
+        }
+
+        return $data;
     }
 }

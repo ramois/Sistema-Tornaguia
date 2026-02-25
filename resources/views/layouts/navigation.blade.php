@@ -7,16 +7,16 @@
         <div class="flex justify-between h-16">
             <div class="flex items-center gap-8">
                 <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
-                    <div class="h-9 w-9 rounded-xl bg-slate-900 text-white flex items-center justify-center text-sm font-bold">PC</div>
+                    <img src="{{ asset('img/pacocollo.png') }}" alt="Pacocollo" class="h-9 w-9 object-contain">
                     <div class="leading-tight">
-                        <div class="text-sm font-semibold text-slate-900">PACOCOLLO</div>
+                        <div class="text-sm font-semibold text-slate-900">COOPERATIVA MINERA "PACOCOLLO" R.L.</div>
                         <div class="text-xs text-slate-500">Sistema de Tornaguías</div>
                     </div>
                 </a>
 
                 <div class="hidden sm:flex items-center gap-1">
                     <a href="{{ route('dashboard') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('dashboard') ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-                        Dashboard
+                        Inicio
                     </a>
                     <a href="{{ route('tornaguias.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('tornaguias.*') ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
                         Tornaguías

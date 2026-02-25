@@ -30,8 +30,8 @@
             <div class="rounded-xl border border-slate-200 p-4">
                 <div class="text-sm font-semibold text-slate-900 mb-2">Datos generales</div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-slate-700">
-                    <div><strong>Departamento:</strong> {{ $tornaguia->departamento }}</div>
-                    <div><strong>Centro Minero:</strong> {{ $tornaguia->centro_minero }}</div>
+                    <div><strong>Departamento:</strong> {{ $tornaguia->departamento ?? 'ORURO' }}</div>
+                    <div><strong>Centro Minero:</strong> {{ $tornaguia->centro_minero ?? 'ORURO' }}</div>
                     <div><strong>Yacimiento:</strong> {{ $tornaguia->yacimiento }}</div>
                     <div><strong>Tranca de Salida:</strong> {{ $tornaguia->tranca_de_salida }}</div>
                 </div>
@@ -52,6 +52,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-slate-700">
                     <div><strong>Tipo de Mineral:</strong> {{ $tornaguia->tipo_de_mineral }}</div>
                     <div><strong>Minerales:</strong> {{ $tornaguia->minerales }}</div>
+                    <div><strong>Presentación:</strong> Broza</div>
                     <div><strong>Peso (Kg):</strong> {{ $tornaguia->peso_kg }}</div>
                     <div><strong>Cantidad:</strong> {{ $tornaguia->cantidad }}</div>
                     <div><strong>Nro Lote:</strong> {{ $tornaguia->nro_lote }}</div>
